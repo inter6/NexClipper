@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TimerTask;
 
-import com.nexcloud.docker.AppConfig;
 import com.nexcloud.docker.ModuleService;
+import com.nexcloud.docker.util.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,35 +19,35 @@ import com.nexcloud.docker.util.Util;
 
 public class ContainerListThread extends TimerTask {
 	private static final Logger logger = LoggerFactory.getLogger(ContainerListThread.class);
-	
+
 	public ContainerListThread() {
 		super();
 	}
-	
+
 	@Override
 	public void run() {
 		int container_cnt=0, sleep_cnt=0;
-		AppConfig appConfig = ModuleService.getBean(AppConfig.class);
-		String result = appConfig.procDockerApi(Util.URI_CONTAINER_LIST);
+		Command command = ModuleService.getBean(Command.class);
+		String result = command.procDockerApi(Util.URI_CONTAINER_LIST);
 		Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
 		ArrayList<Container> containers  = gson.fromJson(result, new TypeToken<ArrayList<Container>>(){}.getType());
-		
+
 		if (containers == null) {
 			return;
 		}
 		else {
 			container_cnt = containers.size();
 		}
-		
+
 		Runnable[] runnable = new Runnable[container_cnt];
 		Thread[] threads = new Thread[container_cnt];
-		
+
 		for(int i=0; i<container_cnt; i++) {
 			runnable[i] = new ContainerListThreadService(containers.get(i));
 			threads[i] = new Thread(runnable[i]);
 			threads[i].start();
 		}
-		
+
 		while(true) {
 			try {
 				sleep_cnt += 1;
@@ -55,13 +55,13 @@ public class ContainerListThread extends TimerTask {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			
+
 			if(container_cnt <= ContainerListThreadService.getThread_cnt()) {
 				//logger.info("---------->> Thread end....");
 				List<String> data = ContainerListThreadService.con_list;
 				ResourceLoader.getInstance().removeResource("con_list");
 				ResourceLoader.getInstance().setResource("con_list", data);
-								
+
 				ContainerListThreadService.setThread_cnt(0);
 				ContainerListThreadService.con_list= new ArrayList<String>();
 				break;
@@ -73,7 +73,7 @@ public class ContainerListThread extends TimerTask {
 				List<String> data = ContainerListThreadService.con_list;
 				ResourceLoader.getInstance().removeResource("con_list");
 				ResourceLoader.getInstance().setResource("con_list", data);
-								
+
 				ContainerListThreadService.setThread_cnt(0);
 				ContainerListThreadService.con_list= new ArrayList<String>();
 				break;

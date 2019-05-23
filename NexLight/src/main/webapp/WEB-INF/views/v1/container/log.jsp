@@ -39,7 +39,7 @@ function fnLog (){
 	$.ajax({
 		url			: "${prefix}/containers/${container_id}/realtime_log",
 		type		: "POST",
-		data		: {"time": m_log_last_time},
+		data		: {"time": m_log_last_time + 1},
 		dataType	: "json",
 		success		: function (data){
 			if( data.result == "SUCCESS" )
@@ -47,7 +47,7 @@ function fnLog (){
 				var obj;
 				if ( data.log.length > 0 ) {
 					for ( var i = 0; i < data.log.length; i++) {
-						obj = JSON.parse(data.log[i]);
+						obj = data.log[i];
 						
 						if (obj.stream == "stderr") {
 							$("#tlog").append("<font color=red>" + "<h6>" +obj.log +"</h6>" + "</font>");
@@ -56,10 +56,10 @@ function fnLog (){
 							$("#tlog").append("<h6>" +obj.log +"</h6>");
 						}
 					}
+
+					m_log_last_time = obj.time;
+					$("#scrollController").animate({ scrollTop: $("#tlog").height() }, "slow");
 				}
-				
-				m_log_last_time = obj.time;
-				$("#scrollController").animate({ scrollTop: $("#tlog").height() }, "slow");
 			}
 		},
 		error		: function(request, status, error) {
