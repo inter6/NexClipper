@@ -9,9 +9,11 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.nexcloud.docker.AppConfig;
 import org.apache.commons.io.input.ReversedLinesFileReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.ModelMap;
 
@@ -27,15 +29,18 @@ import com.nexcloud.docker.util.Util;
 public class ContainerService {
 	private static final Logger logger = LoggerFactory.getLogger(ContainerService.class);
 	private static final int log_cnt = 10000;
+
+	@Autowired
+	private AppConfig appConfig;
 	
 	public String getContainerInspect(String id) {
 		String uri = String.format(Util.URI_CONTAINER_INSPECT, id);
-		return Util.procDockerApi(uri);
+		return appConfig.procDockerApi(uri);
 	}
 	
 	public String getContainerProcess(String id) {
 		String uri = String.format(Util.URI_CONTAINER_PROCESS, id);
-		return Util.procDockerApi(uri);
+		return appConfig.procDockerApi(uri);
 	}
 	
 	public String getContainerLog(String container_id) throws IOException {

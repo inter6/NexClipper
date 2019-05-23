@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.nexcloud.docker.AppConfig;
+import com.nexcloud.docker.ModuleService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -134,7 +136,8 @@ public class ContainerListThreadService implements Runnable {
 
 	public ContainerStat getContainerStat(String api_name, String id) {
 		String uri = String.format(Util.URI_CONTAINER_STAT, id);
-		String result = Util.procDockerApi(uri);
+		AppConfig appConfig = ModuleService.getBean(AppConfig.class);
+		String result = appConfig.procDockerApi(uri);
 
 		Gson gson = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
 		ContainerStat con = gson.fromJson(result, ContainerStat.class);

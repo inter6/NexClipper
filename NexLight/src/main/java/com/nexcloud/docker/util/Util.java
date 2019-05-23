@@ -7,11 +7,7 @@ public class Util {
 	private static final Logger logger = LoggerFactory.getLogger(Util.class);
 	
 	// local test
-	public static final String UNIX_SOCKET = "curl --unix-socket /var/run/docker.sock ";
 	public static final String API_VERSION = "v1.29";
-	
-	// azure test
-	//public static final String UNIX_SOCKET = "curl http://104.41.134.199:4000";
 
 	//public static final String URI_CONTAINER_LIST = "/containers/json";
 	public static final String URI_CONTAINER_LIST = "/containers/json?all=true";
@@ -31,13 +27,4 @@ public class Util {
 	
 	public static final String URI_SYSTEM_INFO = "/info";
 	public static final String URI_SYSTEM_VERSION = "/version";
-	
-	public static String procDockerApi(String uri) {
-		Command cmd = new Command();
-		String dockerCommand = String.format("%s http:/%s%s", UNIX_SOCKET, API_VERSION, uri);
-		//String docker_command = String.format("%s%s", unix_socket, uri);
-		logger.info(dockerCommand);
-		
-		return cmd.execCommand(dockerCommand);
-	}
 }
